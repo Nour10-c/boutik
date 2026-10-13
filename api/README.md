@@ -31,6 +31,7 @@ API sur http://localhost:3000
 | PATCH   | `/admin/products/:id`       | path : `id`, header : token admin, body (au moins un) : `name`, `description`, `price` (≥ 0), `active`, `images` | admin  |
 | DELETE  | `/admin/products/:id`       | path : `id`, header : token admin                                                                                | admin  |
 | PATCH   | `/admin/products/:id/stock` | path : `id`, header : token admin, body : `stock` (entier ≥ 0)                                                   | admin  |
+| GET     | `/shipping/methods`         | aucun                                                                                                            | public |
 
 ## Format d'erreur
 

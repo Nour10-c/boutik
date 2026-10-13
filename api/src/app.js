@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { AppError } from './utils/errors.js'
 import { adminRoutes } from './routes/admin.routes.js'
 import { productsRoutes } from './routes/products.routes.js'
+import { shippingRoutes } from './routes/shipping.routes.js'
 import { HTTPException } from 'hono/http-exception'
 
 export const app = new Hono()
@@ -25,3 +26,4 @@ app.onError((err, c) => {
 
 app.route('/admin', adminRoutes)
 app.route('/products', productsRoutes)
+app.route('/shipping', shippingRoutes)
