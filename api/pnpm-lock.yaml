@@ -17,6 +17,9 @@ importers:
       hono:
         specifier: ^4.13.13
         version: 4.13.13
+      postgres:
+        specifier: ^3.4.9
+        version: 3.4.9
     devDependencies:
       '@types/node':
         specifier: ^26.1.1
@@ -263,6 +266,10 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  postgres@3.4.9:
+    resolution: {integrity: sha512-GD3qdB0x1z9xgFI6cdRD6xu2Sp2WCOEoe3mtnyB5Ee0XrrL5Pe+e4CCnJrRMnL1zYtRDZmQQVbvOttLnKDLnaw==}
+    engines: {node: '>=12'}
+
   read-package-json-fast@6.0.0:
     resolution: {integrity: sha512-PNaGjoCnw9DBA2Kl8D+8po957z778q/HOPuY2u3Bkw/JO3eC8MDx7jn/PgMtSgpcBbs+6UOjDbwReGpXmRvs0g==}
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
@@ -457,6 +464,8 @@ snapshots:
   picomatch@4.0.7: {}
 
   pidtree@1.0.0: {}
+
+  postgres@3.4.9: {}
 
   read-package-json-fast@6.0.0:
     dependencies:

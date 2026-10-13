@@ -1,0 +1,11 @@
+const required = ["DATABASE_URL"]
+
+for (const name of required) {
+    if (!process.env[name]) {
+        throw new Error(`Variable d'environnement manquante : ${name}`)
+    }
+}
+
+export const env = {
+    databaseUrl: process.env.DATABASE_URL,
+}
