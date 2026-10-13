@@ -6,7 +6,7 @@ import {
     updateProductSchema,
     productIdParamSchema,
 } from '../schemas/product.schema.js'
-import { createProduct, updateProduct } from '../services/product.service.js'
+import { createProduct, updateProduct, deleteProduct } from '../services/product.service.js'
 
 export const adminRoutes = new Hono()
 
@@ -31,3 +31,9 @@ adminRoutes.patch(
         return c.json(product)
     },
 )
+
+adminRoutes.delete('/products/:id', validate('param', productIdParamSchema), async (c) => {
+    const { id } = c.req.valid('param')
+    await deleteProduct(id)
+    return c.body(null, 204)
+})

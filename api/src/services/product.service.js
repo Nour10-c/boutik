@@ -4,6 +4,7 @@ import {
     findImagesByProductId,
     insertProduct,
     updateProductById,
+    deleteProductById,
 } from '../repositories/product.repository.js'
 import { AppError } from '../utils/errors.js'
 
@@ -80,4 +81,24 @@ export const updateProduct = async (id, data) => {
 
     const links = images ?? (await findImagesByProductId(id)).map((image) => image.link)
     return toAdminProduct(product, links)
+}
+
+export const deleteProduct = async (id) => {
+    let deleted
+    try {
+        deleted = await deleteProductById(id)
+    } catch (err) {
+        if (err.code === '23503') {
+            throw new AppError(
+                409,
+                'PRODUCT_IN_ORDERS',
+                'Ce produit figure dans des commandes, masquez-le plutôt que de le supprimer',
+            )
+        }
+        throw err
+    }
+
+    if (!deleted) {
+        throw new AppError(404, 'PRODUCT_NOT_FOUND', 'Produit introuvable')
+    }
 }

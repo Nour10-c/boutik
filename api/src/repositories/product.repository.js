@@ -85,3 +85,10 @@ export const updateProductById = (id, fields, images) =>
 
         return product
     })
+
+export const deleteProductById = (id) =>
+    sql.begin(async (tx) => {
+        await tx`DELETE FROM product_image WHERE product_id = ${id}`
+        const rows = await tx`DELETE FROM product WHERE id = ${id} RETURNING id`
+        return rows.length > 0
+    })

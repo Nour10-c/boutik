@@ -29,6 +29,7 @@ API sur http://localhost:3000
 | GET     | `/admin/verify`       | header : `Authorization: Bearer <token>`                                                                         | admin  |
 | POST    | `/admin/products`     | header : token admin, body : `slug`, `name`, `price` (≥ 0), `description`, `active`, `stock`, `images` (URLs)    | admin  |
 | PATCH   | `/admin/products/:id` | path : `id`, header : token admin, body (au moins un) : `name`, `description`, `price` (≥ 0), `active`, `images` | admin  |
+| DELETE  | `/admin/products/:id` | path : `id`, header : token admin                                                                                | admin  |
 
 ## Format d'erreur
 
