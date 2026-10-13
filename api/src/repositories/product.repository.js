@@ -20,3 +20,19 @@ export const findActiveProducts = (search) => sql`
   ${search ? sql`AND p.name ILIKE ${'%' + search + '%'}` : sql``}
   ORDER BY p.id
 `
+
+export const findActiveProductBySlug = async (slug) => {
+    const [product] = await sql`
+      SELECT id, slug, name, description, price, stock
+      FROM product
+      WHERE slug = ${slug} AND active = true
+    `
+    return product
+}
+
+export const findImagesByProductId = (productId) => sql`
+    SELECT link, position
+    FROM product_image
+    WHERE product_id = ${productId}
+    ORDER BY position NULLS LAST, id
+  `
