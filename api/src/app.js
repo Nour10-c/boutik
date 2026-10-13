@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { AppError } from './utils/errors.js'
 import { adminRoutes } from './routes/admin.routes.js'
+import { productsRoutes } from './routes/products.routes.js'
 
 export const app = new Hono()
 
@@ -18,6 +19,7 @@ app.onError((err, c) => {
 })
 
 app.route('/admin', adminRoutes)
+app.route('/products', productsRoutes)
 
 // Pour tester
 app.get('/', (c) => {
