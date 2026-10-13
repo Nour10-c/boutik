@@ -5,3 +5,9 @@ export const findShippingOffers = () => sql`
   FROM shipping_offer
   ORDER BY price, id
 `
+
+export const findShippingCarriers = () => sql`
+  SELECT id, name, offer_id
+  FROM shipping_company_offer
+  ORDER BY name
+`

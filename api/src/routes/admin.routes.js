@@ -9,6 +9,7 @@ import {
 import { createProduct, updateProduct, deleteProduct } from '../services/product.service.js'
 import { updateStockSchema } from '../schemas/stock.schema.js'
 import { updateStock } from '../services/stock.service.js'
+import { listShippingCarriers } from '../services/shipping.service.js'
 
 export const adminRoutes = new Hono()
 
@@ -49,5 +50,13 @@ adminRoutes.patch(
         const { stock } = c.req.valid('json')
         const result = await updateStock(id, stock)
         return c.json(result)
+    },
+)
+
+adminRoutes.get(
+    '/shipping/carriers',
+    async (c) => {
+        const carriers = await listShippingCarriers()
+        return c.json(carriers)
     },
 )
