@@ -1,4 +1,6 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import { env } from './config/env.js'
 import { AppError } from './utils/errors.js'
 import { adminRoutes } from './routes/admin.routes.js'
 import { productsRoutes } from './routes/products.routes.js'
@@ -7,6 +9,8 @@ import { HTTPException } from 'hono/http-exception'
 import { paymentsRoutes } from './routes/payments.routes.js'
 
 export const app = new Hono()
+
+app.use('*', cors({ origin: env.corsOrigins }))
 
 app.notFound((c) => {
     return c.json({ error: { code: 'NOT_FOUND', message: 'Route introuvable' } }, 404)
