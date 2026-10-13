@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { AppError } from './utils/errors.js'
+import { adminRoutes } from './routes/admin.routes.js'
 
 export const app = new Hono()
 
@@ -15,6 +16,8 @@ app.onError((err, c) => {
     console.error(err)
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Erreur interne du serveur' } }, 500)
 })
+
+app.route('/admin', adminRoutes)
 
 // Pour tester
 app.get('/', (c) => {
