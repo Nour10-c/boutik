@@ -2,6 +2,7 @@ import {
     findActiveProducts,
     findActiveProductBySlug,
     findImagesByProductId,
+    insertProduct,
 } from '../repositories/product.repository.js'
 import { AppError } from '../utils/errors.js'
 
@@ -42,5 +43,26 @@ export const getProductBySlug = async (slug) => {
         price: Number(product.price),
         images: images.map((image) => image.link),
         availability: getAvailability(product.stock),
+    }
+}
+
+export const createProduct = async (data) => {
+    try {
+        const product = await insertProduct(data)
+        return {
+            id: product.id,
+            slug: product.slug,
+            name: product.name,
+            description: product.description,
+            price: Number(product.price),
+            active: product.active,
+            stock: product.stock,
+            images: data.images,
+        }
+    } catch (err) {
+        if (err.code === '23505') {
+            throw new AppError(409, 'SLUG_ALREADY_EXISTS', 'Ce slug existe déjà')
+        }
+        throw err
     }
 }

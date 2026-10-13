@@ -22,11 +22,12 @@ API sur http://localhost:3000
 
 ## Routes
 
-| Méthode | Route             | Paramètres                               | Accès  |
-| ------- | ----------------- | ---------------------------------------- | ------ |
-| GET     | `/products`       | query : `search` (optionnel)             | public |
-| GET     | `/products/:slug` | path : `slug`                            | public |
-| GET     | `/admin/verify`   | header : `Authorization: Bearer <token>` | admin  |
+| Méthode | Route             | Paramètres                                                                                                    | Accès  |
+| ------- | ----------------- | ------------------------------------------------------------------------------------------------------------- | ------ |
+| GET     | `/products`       | query : `search` (optionnel)                                                                                  | public |
+| GET     | `/products/:slug` | path : `slug`                                                                                                 | public |
+| GET     | `/admin/verify`   | header : `Authorization: Bearer <token>`                                                                      | admin  |
+| POST    | `/admin/products` | header : token admin, body : `slug`, `name`, `price` (≥ 0), `description`, `active`, `stock`, `images` (URLs) | admin  |
 
 ## Format d'erreur
 

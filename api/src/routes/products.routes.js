@@ -16,3 +16,4 @@ productsRoutes.get('/:slug', validate('param', productParamSchema), async (c) =>
     const product = await getProductBySlug(slug)
     return c.json(product)
 })
+

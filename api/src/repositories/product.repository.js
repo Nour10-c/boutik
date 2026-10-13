@@ -36,3 +36,23 @@ export const findImagesByProductId = (productId) => sql`
     WHERE product_id = ${productId}
     ORDER BY position NULLS LAST, id
   `
+
+export const insertProduct = (product) =>
+    sql.begin(async (tx) => {
+        const [created] = await tx`
+        INSERT INTO product (slug, name, description, price, active, stock)
+        VALUES (${product.slug}, ${product.name}, ${product.description}, ${product.price}, ${product.active}, ${product.stock})
+        RETURNING id, slug, name, description, price, active, stock
+      `
+
+        if (product.images.length > 0) {
+            const rows = product.images.map((link, position) => ({
+                product_id: created.id,
+                position,
+                link,
+            }))
+            await tx`INSERT INTO product_image ${tx(rows, 'product_id', 'position', 'link')}`
+        }
+
+        return created
+    })

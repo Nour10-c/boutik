@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { AppError } from './utils/errors.js'
 import { adminRoutes } from './routes/admin.routes.js'
 import { productsRoutes } from './routes/products.routes.js'
+import { HTTPException } from 'hono/http-exception'
 
 export const app = new Hono()
 
@@ -14,14 +15,13 @@ app.onError((err, c) => {
         return c.json({ error: { code: err.code, message: err.message } }, err.status)
     }
 
+    if (err instanceof HTTPException) {
+        return c.json({ error: { code: 'BAD_REQUEST', message: err.message } }, err.status)
+    }
+
     console.error(err)
     return c.json({ error: { code: 'INTERNAL_ERROR', message: 'Erreur interne du serveur' } }, 500)
 })
 
 app.route('/admin', adminRoutes)
 app.route('/products', productsRoutes)
-
-// Pour tester
-app.get('/', (c) => {
-    return c.text('Hello Hono!')
-})
