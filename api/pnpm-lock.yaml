@@ -23,6 +23,9 @@ importers:
       postgres:
         specifier: ^3.4.9
         version: 3.4.9
+      stripe:
+        specifier: ^23.0.0
+        version: 23.0.0(@types/node@26.6.5)
       zod:
         specifier: ^4.6.7
         version: 4.6.7
@@ -298,6 +301,15 @@ packages:
     resolution: {integrity: sha512-PcByqNyT/38F2kDNi006HAMRJaULuBzq/FOsw3qdZvX/GA9W/jamDaRskgHjubHiftXK5sIFxLNkvrXUwcof6Q==}
     engines: {node: '>= 0.4'}
 
+  stripe@23.0.0:
+    resolution: {integrity: sha512-MDE2A5ZVVluYURORaZEVghSmnLJc3w6aHAlZSxDQMsOjOb3V0O6ro/CiaeFlJS4N7uIVmsg98ocRsPmUK6YfyA==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@types/node': '>=20'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+
   tsx@4.23.15:
     resolution: {integrity: sha512-Yiex1Ovn8z2xPpOWckIiysV1SSyRMY9BkLF++q0yKiDxCqRhosKfMg3janKkiLBwZ5c/YryloKwGZcrEmtwxKw==}
     engines: {node: '>=18.0.0'}
@@ -499,6 +511,10 @@ snapshots:
   shebang-regex@3.0.0: {}
 
   shell-quote@1.12.0: {}
+
+  stripe@23.0.0(@types/node@26.6.5):
+    optionalDependencies:
+      '@types/node': 26.6.5
 
   tsx@4.23.15:
     dependencies:

@@ -32,7 +32,7 @@ API sur http://localhost:3000
 | DELETE  | `/admin/products/:id`       | path : `id`, header : token admin                                                                                | admin  |
 | PATCH   | `/admin/products/:id/stock` | path : `id`, header : token admin, body : `stock` (entier ≥ 0)                                                   | admin  |
 | GET     | `/shipping/methods`         | aucun                                                                                                            | public |
-| GET     | `/shipping/carriers`        | header : token admin                                                                                             | admin  |
+| GET     | `/admin/shipping/carriers`  | header : token admin                                                                                             | admin  |
 
 ## Format d'erreur
 

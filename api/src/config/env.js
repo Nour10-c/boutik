@@ -1,4 +1,9 @@
-const required = ["DATABASE_URL", "ADMIN_TOKEN"]
+const required = [
+    'DATABASE_URL',
+    'ADMIN_TOKEN',
+    'STRIPE_SECRET_KEY',
+    'STRIPE_WEBHOOK_SECRET',
+]
 
 for (const name of required) {
     if (!process.env[name]) {
@@ -9,4 +14,6 @@ for (const name of required) {
 export const env = {
     databaseUrl: process.env.DATABASE_URL,
     adminToken: process.env.ADMIN_TOKEN,
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
 }
