@@ -56,3 +56,32 @@ export const insertProduct = (product) =>
 
         return created
     })
+
+export const updateProductById = (id, fields, images) =>
+    sql.begin(async (tx) => {
+        const hasFields = Object.keys(fields).length > 0
+
+        const [product] = hasFields
+            ? await tx`
+                UPDATE product SET ${tx(fields)}
+                WHERE id = ${id}
+                RETURNING id, slug, name, description, price, active, stock
+              `
+            : await tx`
+                SELECT id, slug, name, description, price, active, stock
+                FROM product
+                WHERE id = ${id}
+              `
+
+        if (!product) return undefined
+
+        if (images) {
+            await tx`DELETE FROM product_image WHERE product_id = ${id}`
+            if (images.length > 0) {
+                const rows = images.map((link, position) => ({ product_id: id, position, link }))
+                await tx`INSERT INTO product_image ${tx(rows, 'product_id', 'position', 'link')}`
+            }
+        }
+
+        return product
+    })

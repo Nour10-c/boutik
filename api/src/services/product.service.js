@@ -3,6 +3,7 @@ import {
     findActiveProductBySlug,
     findImagesByProductId,
     insertProduct,
+    updateProductById,
 } from '../repositories/product.repository.js'
 import { AppError } from '../utils/errors.js'
 
@@ -46,23 +47,37 @@ export const getProductBySlug = async (slug) => {
     }
 }
 
+const toAdminProduct = (product, images) => ({
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    description: product.description,
+    price: Number(product.price),
+    active: product.active,
+    stock: product.stock,
+    images,
+})
+
 export const createProduct = async (data) => {
     try {
         const product = await insertProduct(data)
-        return {
-            id: product.id,
-            slug: product.slug,
-            name: product.name,
-            description: product.description,
-            price: Number(product.price),
-            active: product.active,
-            stock: product.stock,
-            images: data.images,
-        }
+        return toAdminProduct(product, data.images)
     } catch (err) {
         if (err.code === '23505') {
             throw new AppError(409, 'SLUG_ALREADY_EXISTS', 'Ce slug existe déjà')
         }
         throw err
     }
+}
+
+export const updateProduct = async (id, data) => {
+    const { images, ...fields } = data
+
+    const product = await updateProductById(id, fields, images)
+    if (!product) {
+        throw new AppError(404, 'PRODUCT_NOT_FOUND', 'Produit introuvable')
+    }
+
+    const links = images ?? (await findImagesByProductId(id)).map((image) => image.link)
+    return toAdminProduct(product, links)
 }

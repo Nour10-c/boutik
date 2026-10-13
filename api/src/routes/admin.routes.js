@@ -1,8 +1,12 @@
 import { Hono } from 'hono'
 import { adminAuth } from '../middlewares/adminAuth.js'
 import { validate } from '../utils/validate.js'
-import { createProductSchema } from '../schemas/product.schema.js'
-import { createProduct } from '../services/product.service.js'
+import {
+    createProductSchema,
+    updateProductSchema,
+    productIdParamSchema,
+} from '../schemas/product.schema.js'
+import { createProduct, updateProduct } from '../services/product.service.js'
 
 export const adminRoutes = new Hono()
 
@@ -15,3 +19,15 @@ adminRoutes.post('/products', validate('json', createProductSchema), async (c) =
     const product = await createProduct(data)
     return c.json(product, 201)
 })
+
+adminRoutes.patch(
+    '/products/:id',
+    validate('param', productIdParamSchema),
+    validate('json', updateProductSchema),
+    async (c) => {
+        const { id } = c.req.valid('param')
+        const data = c.req.valid('json')
+        const product = await updateProduct(id, data)
+        return c.json(product)
+    },
+)
