@@ -86,5 +86,5 @@ ADD FOREIGN KEY ("product_id") REFERENCES "product" ("id") ON UPDATE NO ACTION O
 ALTER TABLE "payment"
 ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-ALTER TABLE "shipping_company"
+ALTER TABLE "shipping_company_offer"
 ADD FOREIGN KEY ("offer_id") REFERENCES "shipping_offer" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION;
