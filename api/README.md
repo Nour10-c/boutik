@@ -33,6 +33,7 @@ API sur http://localhost:3000
 | PATCH   | `/admin/products/:id/stock` | path : `id`, header : token admin, body : `stock` (entier ≥ 0)                                                   | admin  |
 | GET     | `/shipping/methods`         | aucun                                                                                                            | public |
 | GET     | `/admin/shipping/carriers`  | header : token admin                                                                                             | admin  |
+| POST    | `/payments/webhook`         | header : `stripe-signature`, body brut Stripe                                                                    | Stripe |
 
 ## Format d'erreur
 
