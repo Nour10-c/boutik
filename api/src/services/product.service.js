@@ -8,11 +8,7 @@ import {
 } from '../repositories/product.repository.js'
 import { AppError } from '../utils/errors.js'
 
-export const getAvailability = (stock) => {
-    if (!stock || stock <= 0) return 'out_of_stock'
-    if (stock <= 10) return 'low_stock'
-    return 'in_stock'
-}
+import { getAvailability } from './stock.service.js'
 
 const toPublicProduct = (row) => ({
     id: row.id,
