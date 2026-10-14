@@ -46,8 +46,14 @@ onScopeDispose(() => clearTimeout(timer));
     >
       <template v-if="outOfStock">Épuisé</template>
       <template v-else-if="atLimit">Maximum dans le panier</template>
-      <template v-else-if="props.compact && added">Ajouté ✓</template>
-      <template v-else>Ajouter au panier</template>
+      <template v-else-if="props.compact && added">
+        <Icon name="lucide:check" class="size-4" aria-hidden="true" />
+        Ajouté
+      </template>
+      <template v-else>
+        <Icon name="lucide:shopping-bag" class="size-4" aria-hidden="true" />
+        Ajouter au panier
+      </template>
     </Button>
 
     <p

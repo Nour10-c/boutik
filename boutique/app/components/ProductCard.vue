@@ -44,7 +44,9 @@ const productPath = computed(() => `/products/${props.product.slug}`);
         <p class="text-base font-bold">
           {{ formatPrice(props.product.price) }}
         </p>
-        <Badge :variant="availability.variant">{{ availability.label }}</Badge>
+        <Badge :variant="availability.variant" dot>{{
+          availability.label
+        }}</Badge>
       </div>
 
       <AddToCartButton :product="props.product" compact class="mt-auto" />

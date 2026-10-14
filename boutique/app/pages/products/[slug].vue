@@ -59,7 +59,7 @@ useHead({ title: () => product.value?.name ?? "Produit" });
         <h1 class="text-3xl font-bold">{{ product.name }}</h1>
         <div class="flex items-center gap-3">
           <p class="text-2xl font-bold">{{ formatPrice(product.price) }}</p>
-          <Badge :variant="availability.variant">{{
+          <Badge :variant="availability.variant" dot>{{
             availability.label
           }}</Badge>
         </div>

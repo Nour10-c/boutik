@@ -15,6 +15,7 @@ const { count } = useCart();
           to="/cart"
           class="flex items-center gap-2 text-base font-medium hover:text-primary-600"
         >
+          <Icon name="lucide:shopping-bag" class="size-4" aria-hidden="true" />
           Panier
           <Badge v-if="count" variant="secondary">{{ count }}</Badge>
         </NuxtLink>
