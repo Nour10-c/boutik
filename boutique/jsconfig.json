@@ -1,0 +1,18 @@
+{
+  // https://nuxt.com/docs/guide/concepts/javascript
+  "files": [],
+  "references": [
+    {
+      "path": "./.nuxt/jsconfig.app.json"
+    },
+    {
+      "path": "./.nuxt/jsconfig.server.json"
+    },
+    {
+      "path": "./.nuxt/jsconfig.shared.json"
+    },
+    {
+      "path": "./.nuxt/jsconfig.node.json"
+    }
+  ]
+}
