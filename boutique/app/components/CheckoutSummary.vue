@@ -10,16 +10,28 @@ const props = defineProps({
   <Card class="space-y-4">
     <h2 class="text-xl font-semibold">Récapitulatif</h2>
 
-    <ul class="space-y-2">
+    <ul class="space-y-3">
       <li
         v-for="item in props.items"
         :key="item.productId"
-        class="flex justify-between gap-2 text-sm"
+        class="flex items-center gap-3"
       >
-        <span>{{ item.quantity }} × {{ item.name }}</span>
-        <span class="font-medium">{{
-          formatPrice(item.price * item.quantity)
-        }}</span>
+        <img
+          v-if="item.image"
+          :src="item.image"
+          alt=""
+          class="size-12 shrink-0 rounded-md object-cover"
+        />
+        <div v-else class="size-12 shrink-0 rounded-md bg-neutral-100"></div>
+
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-sm font-medium">{{ item.name }}</p>
+          <p class="text-xs text-neutral-500">Quantité : {{ item.quantity }}</p>
+        </div>
+
+        <p class="text-sm font-medium">
+          {{ formatPrice(item.price * item.quantity) }}
+        </p>
       </li>
     </ul>
 

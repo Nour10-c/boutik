@@ -166,6 +166,7 @@ useHead({ title: "Commande" });
         >
           Payer {{ formatPrice(displayedTotal) }}
         </Button>
+        <SecurePaymentNote class="justify-center" />
       </div>
     </form>
   </section>
