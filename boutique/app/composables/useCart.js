@@ -1,6 +1,7 @@
 const MAX_QUANTITY = 100
 
-const clamp = (quantity) => Math.min(Math.max(Math.trunc(quantity), 1), MAX_QUANTITY)
+const getLimit = (stock) => Math.min(stock ?? MAX_QUANTITY, MAX_QUANTITY)
+const clamp = (quantity, limit) => Math.min(Math.max(Math.trunc(quantity), 1), limit)
 
 export const useCart = () => {
     const items = useState('cart-items', () => [])
@@ -18,13 +19,24 @@ export const useCart = () => {
     const setQuantity = (productId, quantity) => {
         if (quantity < 1) return remove(productId)
         items.value = items.value.map((item) =>
-            item.productId === productId ? { ...item, quantity: clamp(quantity) } : item,
+            item.productId === productId
+                ? { ...item, quantity: clamp(quantity, getLimit(item.stock)) }
+                : item,
         )
     }
 
     const add = (product, quantity = 1) => {
+        const stock = product.stock ?? null
         const existing = items.value.find((item) => item.productId === product.id)
-        if (existing) return setQuantity(product.id, existing.quantity + quantity)
+
+        if (existing) {
+            items.value = items.value.map((item) =>
+                item.productId === product.id
+                    ? { ...item, stock, quantity: clamp(item.quantity + quantity, getLimit(stock)) }
+                    : item,
+            )
+            return
+        }
 
         items.value = [
             ...items.value,
@@ -34,7 +46,8 @@ export const useCart = () => {
                 name: product.name,
                 price: product.price,
                 image: product.images?.[0] ?? product.image ?? null,
-                quantity: clamp(quantity),
+                stock,
+                quantity: clamp(quantity, getLimit(stock)),
             },
         ]
     }

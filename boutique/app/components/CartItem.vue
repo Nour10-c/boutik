@@ -4,6 +4,14 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update-quantity", "remove"]);
+
+const maxQuantity = computed(() => Math.min(props.item.stock ?? 100, 100));
+const limited = computed(
+  () =>
+    props.item.stock !== null &&
+    props.item.stock !== undefined &&
+    props.item.quantity >= props.item.stock,
+);
 </script>
 
 <template>
@@ -41,10 +49,18 @@ const emit = defineEmits(["update-quantity", "remove"]);
         </div>
 
         <div class="flex items-center justify-between gap-2">
-          <QuantitySelector
-            :model-value="props.item.quantity"
-            @update:model-value="emit('update-quantity', $event)"
-          />
+          <div class="space-y-1">
+            <QuantitySelector
+              :model-value="props.item.quantity"
+              :max="maxQuantity"
+              @update:model-value="emit('update-quantity', $event)"
+            />
+            <p v-if="limited" role="status" class="text-sm text-secondary-700">
+              Stock limité : {{ props.item.stock }} disponible{{
+                props.item.stock > 1 ? "s" : ""
+              }}
+            </p>
+          </div>
           <Button variant="outline" size="sm" @click="emit('remove')"
             >Retirer</Button
           >

@@ -4,13 +4,24 @@ const props = defineProps({
   compact: { type: Boolean, default: false },
 });
 
-const { add } = useCart();
+const { items, add } = useCart();
 
 const added = ref(false);
 let timer;
 
 const outOfStock = computed(
   () => props.product.availability === "out_of_stock",
+);
+const inCart = computed(
+  () =>
+    items.value.find((item) => item.productId === props.product.id)?.quantity ??
+    0,
+);
+const atLimit = computed(
+  () =>
+    props.product.stock !== null &&
+    props.product.stock !== undefined &&
+    inCart.value >= props.product.stock,
 );
 
 const onAdd = () => {
@@ -30,10 +41,11 @@ onScopeDispose(() => clearTimeout(timer));
     <Button
       :size="props.compact ? 'sm' : 'md'"
       :class="props.compact ? 'w-full' : ''"
-      :disabled="outOfStock"
+      :disabled="outOfStock || atLimit"
       @click="onAdd"
     >
       <template v-if="outOfStock">Épuisé</template>
+      <template v-else-if="atLimit">Maximum dans le panier</template>
       <template v-else-if="props.compact && added">Ajouté ✓</template>
       <template v-else>Ajouter au panier</template>
     </Button>
