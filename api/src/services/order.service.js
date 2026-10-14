@@ -1,26 +1,35 @@
-import { sql } from '../config/db.js'
 import { AppError } from '../utils/errors.js'
+import {
+    runInTransaction,
+    findShippingOfferById,
+    findActiveProductsByIds,
+    insertOrder,
+    decrementStock,
+    insertOrderProduct,
+    findOrderByIdAndKey,
+    findOrderItems,
+    findAllOrders,
+    findOrderById,
+    findPaymentsByOrderId,
+    findOrderByIdForUpdate,
+    updateOrderById,
+} from '../repositories/order.repository.js'
+
+const generateRef = () => Math.floor(100000 + Math.random() * 900000)
+
+const MANAGEABLE_STATUSES = ['payée', 'traitée']
 
 export const prepareOrder = async ({ items, shipping_offer_id }) => {
-    
-    const [offer] = await sql`
-        SELECT id, name, price FROM shipping_offer WHERE id = ${shipping_offer_id}
-    `
+    const offer = await findShippingOfferById(shipping_offer_id)
     if (!offer) throw new AppError(400, 'BAD_REQUEST', 'Offre de livraison invalide')
 
-  
     const quantities = new Map()
     for (const { product_id, quantity } of items) {
         quantities.set(product_id, (quantities.get(product_id) ?? 0) + quantity)
     }
 
+    const products = await findActiveProductsByIds([...quantities.keys()])
 
-    const ids = [...quantities.keys()]
-    const products = await sql`
-        SELECT id, price, stock FROM product WHERE id IN ${sql(ids)} AND active = true
-    `
-
-   
     let total = Number(offer.price)
     const lines = []
     for (const [product_id, quantity] of quantities) {
@@ -36,69 +45,79 @@ export const prepareOrder = async ({ items, shipping_offer_id }) => {
 
     return { offer, lines, total: Math.round(total * 100) / 100 }
 }
-const generateRef = () => Math.floor(100000 + Math.random() * 900000)
 
 export const createOrder = async (data) => {
     const { offer, lines, total } = await prepareOrder(data)
-    const { email, address, city, zip } = data
 
     for (let attempt = 0; attempt < 5; attempt++) {
         try {
-            return await sql.begin(async (tx) => {
-                const [order] = await tx`
-                    INSERT INTO "order"
-                        (email, address, city, zip, ref, date, total, status,
-                         shipping_offer_name, shipping_offer_price)
-                    VALUES
-                        (${email}, ${address}, ${city}, ${zip}, ${generateRef()}, NOW(), ${total},
-                         'en attente', ${offer.name}, ${offer.price})
-                    RETURNING id, ref, access_key
-                `
+            return await runInTransaction(async (tx) => {
+                const order = await insertOrder(tx, {
+                    email: data.email,
+                    address: data.address,
+                    city: data.city,
+                    zip: data.zip,
+                    ref: generateRef(),
+                    total,
+                    shippingOfferName: offer.name,
+                    shippingOfferPrice: offer.price,
+                })
 
                 for (const line of lines) {
-                    const updated = await tx`
-                        UPDATE product SET stock = stock - ${line.quantity}
-                        WHERE id = ${line.product_id} AND stock >= ${line.quantity}
-                        RETURNING id
-                    `
-                    if (updated.length === 0) {
+                    const ok = await decrementStock(tx, line.product_id, line.quantity)
+                    if (!ok) {
                         throw new AppError(400, 'BAD_REQUEST', `Stock insuffisant pour le produit #${line.product_id}`)
                     }
-
-                    await tx`
-                        INSERT INTO order_product (order_id, product_id, quantity, paid_price)
-                        VALUES (${order.id}, ${line.product_id}, ${line.quantity}, ${line.paid_price})
-                    `
+                    await insertOrderProduct(tx, order.id, line)
                 }
 
                 return { order_id: order.id, ref: order.ref, access_key: order.access_key, total }
             })
         } catch (err) {
+        
             if (err.code === '23505' && err.constraint_name === 'order_ref_unique') continue
             throw err
         }
     }
     throw new AppError(500, 'INTERNAL_ERROR', 'Impossible de créer la commande')
 }
+
 export const getOrderWithKey = async (id, key) => {
-    const [order] = await sql`
-        SELECT id, ref, email, address, city, zip, date, total, status,
-               shipping_offer_name, shipping_offer_price, shipping_company, tracking_number
-        FROM "order"
-        WHERE id = ${id} AND access_key = ${key}
-    `
+    const order = await findOrderByIdAndKey(id, key)
+    if (!order) throw new AppError(404, 'NOT_FOUND', 'Commande introuvable')
+    return { ...order, items: await findOrderItems(id) }
+}
 
-    if (!order) {
-        throw new AppError(404, 'NOT_FOUND', 'Commande introuvable')
-    }
+export const listOrders = () => findAllOrders()
 
-    const items = await sql`
-        SELECT op.product_id, p.name, op.quantity, op.paid_price
-        FROM order_product op
-        JOIN product p ON p.id = op.product_id
-        WHERE op.order_id = ${id}
-        ORDER BY op.id
-    `
+export const getOrderForAdmin = async (id) => {
+    const order = await findOrderById(id)
+    if (!order) throw new AppError(404, 'NOT_FOUND', 'Commande introuvable')
+    const [items, payments] = await Promise.all([findOrderItems(id), findPaymentsByOrderId(id)])
+    return { ...order, items, payments }
+}
 
-    return { ...order, items }
+export const updateOrderAdmin = async (id, { status, shipping_company, tracking_number }) => {
+    return runInTransaction(async (tx) => {
+        const current = await findOrderByIdForUpdate(tx, id)
+        if (!current) throw new AppError(404, 'NOT_FOUND', 'Commande introuvable')
+
+        const targetStatus = status ?? current.status
+        const targetCompany = shipping_company ?? current.shipping_company
+
+      
+        if (!MANAGEABLE_STATUSES.includes(current.status) || !MANAGEABLE_STATUSES.includes(targetStatus)) {
+            throw new AppError(409, 'CONFLICT', `Impossible de passer de « ${current.status} » à « ${targetStatus} »`)
+        }
+
+        if (targetStatus === 'traitée' && !targetCompany) {
+            throw new AppError(409, 'CONFLICT', 'Impossible de traiter une commande sans transporteur')
+        }
+
+        return updateOrderById(tx, id, {
+            status: targetStatus,
+            shippingCompany: targetCompany ?? null,
+            trackingNumber: tracking_number ?? current.tracking_number,
+        })
+    })
 }
