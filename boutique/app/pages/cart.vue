@@ -32,7 +32,9 @@ useHead({ title: "Panier" });
       </ul>
 
       <div class="lg:col-span-1">
-        <CartSummary :count="count" :total="total" />
+        <CartSummary :count="count" :total="total">
+          <Button @click="navigateTo('/checkout')">Commander</Button>
+        </CartSummary>
       </div>
     </div>
   </section>
