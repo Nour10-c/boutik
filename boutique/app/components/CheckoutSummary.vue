@@ -1,16 +1,9 @@
 <script setup>
 const props = defineProps({
   items: { type: Array, required: true },
-  productsTotal: { type: Number, required: true },
   shipping: { type: Object, default: null },
-  validatedTotal: { type: Number, default: null },
+  total: { type: Number, required: true },
 });
-
-const estimatedTotal = computed(
-  () =>
-    Math.round((props.productsTotal + (props.shipping?.price ?? 0)) * 100) /
-    100,
-);
 </script>
 
 <template>
@@ -44,15 +37,8 @@ const estimatedTotal = computed(
     <div
       class="flex justify-between gap-2 border-t border-neutral-200 pt-3 text-lg font-bold"
     >
-      <span>{{
-        props.validatedTotal !== null ? "Total validé" : "Total estimatif"
-      }}</span>
-      <span>{{ formatPrice(props.validatedTotal ?? estimatedTotal) }}</span>
+      <span>Total</span>
+      <span>{{ formatPrice(props.total) }}</span>
     </div>
-
-    <p v-if="props.validatedTotal === null" class="text-xs text-neutral-500">
-      Le total officiel est calculé par le serveur à la validation de la
-      commande.
-    </p>
   </Card>
 </template>
