@@ -8,7 +8,7 @@ import {
 } from '../repositories/product.repository.js'
 import { AppError } from '../utils/errors.js'
 
-import { getAvailability } from './stock.service.js'
+import { getAvailability, getPublicStock } from './stock.service.js'
 
 const toPublicProduct = (row) => ({
     id: row.id,
@@ -17,6 +17,7 @@ const toPublicProduct = (row) => ({
     description: row.description,
     price: Number(row.price),
     image: row.image,
+    stock: getPublicStock(row.stock),
     availability: getAvailability(row.stock),
 })
 
@@ -40,6 +41,7 @@ export const getProductBySlug = async (slug) => {
         description: product.description,
         price: Number(product.price),
         images: images.map((image) => image.link),
+        stock: getPublicStock(product.stock),
         availability: getAvailability(product.stock),
     }
 }

@@ -7,6 +7,8 @@ export const getAvailability = (stock) => {
     return 'in_stock'
 }
 
+export const getPublicStock = (stock) => (stock > 0 && stock <= 10 ? stock : null)
+
 export const updateStock = async (id, stock) => {
     const product = await updateStockById(id, stock)
     if (!product) {
