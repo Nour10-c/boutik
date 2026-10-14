@@ -3,7 +3,7 @@ const required = [
     'ADMIN_TOKEN',
     'STRIPE_SECRET_KEY',
     'STRIPE_WEBHOOK_SECRET',
-    'CORS_ORIGIN',
+    'FRONTEND_URL',
 ]
 
 for (const name of required) {
@@ -17,5 +17,5 @@ export const env = {
     adminToken: process.env.ADMIN_TOKEN,
     stripeSecretKey: process.env.STRIPE_SECRET_KEY,
     stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
-    corsOrigins: process.env.CORS_ORIGIN.split(','),
+    frontendUrl: process.env.FRONTEND_URL,
 }

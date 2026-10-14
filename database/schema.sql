@@ -88,3 +88,11 @@ ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id") ON UPDATE NO ACTION ON DE
 
 ALTER TABLE "shipping_company_offer"
 ADD FOREIGN KEY ("offer_id") REFERENCES "shipping_offer" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE payment ALTER COLUMN stripe_ref TYPE VARCHAR(255) USING stripe_ref::text;
+
+ALTER TABLE payment
+ADD COLUMN IF NOT EXISTS stripe_event_id VARCHAR(255) UNIQUE;
+
+ALTER TABLE payment
+ADD CONSTRAINT payment_order_id_unique UNIQUE (order_id);
