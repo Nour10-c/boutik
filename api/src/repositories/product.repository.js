@@ -92,3 +92,13 @@ export const deleteProductById = (id) =>
         const rows = await tx`DELETE FROM product WHERE id = ${id} RETURNING id`
         return rows.length > 0
     })
+    export const findAllProducts = () => sql`
+    SELECT p.id, p.slug, p.name, p.description, p.price, p.active, p.stock,
+           COALESCE(
+               (SELECT json_agg(pi.link ORDER BY pi.position)
+                FROM product_image pi WHERE pi.product_id = p.id),
+               '[]'::json
+           ) AS images
+    FROM product p
+    ORDER BY p.id DESC
+`

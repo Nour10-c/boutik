@@ -5,6 +5,7 @@ import {
     insertProduct,
     updateProductById,
     deleteProductById,
+    findAllProducts,
 } from '../repositories/product.repository.js'
 import { AppError } from '../utils/errors.js'
 
@@ -46,6 +47,11 @@ export const getProductBySlug = async (slug) => {
     }
 }
 
+export const listAllProducts = async () => {
+    const rows = await findAllProducts()
+    return rows.map(toAdminProduct)
+}
+
 const toAdminProduct = (product, images) => ({
     id: product.id,
     slug: product.slug,
@@ -56,6 +62,11 @@ const toAdminProduct = (product, images) => ({
     stock: product.stock,
     images,
 })
+
+export const listAdminProducts = async () => {
+    const rows = await findAllProducts()
+    return rows.map((row) => toAdminProduct(row, row.images))
+}
 
 export const createProduct = async (data) => {
     try {

@@ -4,6 +4,7 @@ const required = [
     'STRIPE_SECRET_KEY',
     'STRIPE_WEBHOOK_SECRET',
     'FRONTEND_URL',
+    'ADMIN_URL',
 ]
 
 for (const name of required) {
@@ -18,4 +19,5 @@ export const env = {
     stripeSecretKey: process.env.STRIPE_SECRET_KEY,
     stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
     frontendUrl: process.env.FRONTEND_URL,
+    adminUrl: process.env.ADMIN_URL,
 }

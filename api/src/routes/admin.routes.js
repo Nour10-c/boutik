@@ -6,9 +6,13 @@ import {
     updateProductSchema,
     productIdParamSchema,
 } from '../schemas/product.schema.js'
+<<<<<<< HEAD
+import { listAdminProducts, createProduct, updateProduct, deleteProduct } from '../services/product.service.js'
+=======
 import { createProduct, updateProduct, deleteProduct } from '../services/product.service.js'
 import { createShippingSchema } from '../schemas/shipping.schema.js'
 import { createShippingMethods } from '../services/shipping.service.js'
+>>>>>>> 886e2b72245518affa581133a0d95f56d436c007
 import { updateStockSchema } from '../schemas/stock.schema.js'
 import { updateStock } from '../services/stock.service.js'
 import { listShippingCarriers } from '../services/shipping.service.js'
@@ -18,6 +22,8 @@ export const adminRoutes = new Hono()
 adminRoutes.use('*', adminAuth)
 
 adminRoutes.get('/verify', (c) => c.json({ ok: true }))
+
+adminRoutes.get('/products', async (c) => c.json(await listAdminProducts()))
 
 adminRoutes.post('/products', validate('json', createProductSchema), async (c) => {
     const data = c.req.valid('json')
