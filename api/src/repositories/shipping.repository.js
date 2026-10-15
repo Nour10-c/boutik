@@ -7,9 +7,11 @@ export const findShippingOffers = () => sql`
 `
 
 export const findShippingCarriers = () => sql`
-  SELECT id, name, offer_id
-  FROM shipping_company_offer
-  ORDER BY name
+  SELECT sc.id, sc.name, so.name AS offer, sco.cost
+  FROM shipping_company sc
+  JOIN shipping_company_offer sco ON sco.company_id = sc.id
+  JOIN shipping_offer so ON so.id = sco.offer_id
+  ORDER BY sc.name, so.name
 `
 export const insertShippingMethods = (shippingMethods) => sql`
   INSERT INTO shipping_offer (name, price)

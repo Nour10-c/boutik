@@ -24,12 +24,9 @@ export const orderKeyQuerySchema = z.object({
 })
 export const updateOrderSchema = z
     .object({
-        status: z.enum(['en attente', 'payée', 'traitée']).optional(),
-        shipping_company: z.string().trim().min(1).max(255).optional(),
-        tracking_number: z.string().trim().min(1).max(255).optional(),
+        status: z.enum(['en attente', 'payée', 'traitée']),
     })
-    .refine((v) => Object.keys(v).length > 0, 'Aucune modification fournie')
-
+    .strict()
 
 export const updateShippingSchema = z
     .object({

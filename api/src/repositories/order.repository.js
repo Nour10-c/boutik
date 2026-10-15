@@ -59,8 +59,11 @@ export const findOrderItems = (orderId) => sql`
     ORDER BY op.id
 `
 
-export const findAllOrders = () => sql`SELECT * FROM "order" ORDER BY date DESC, id DESC`
-
+export const findAllOrders = () => sql`
+    SELECT id, ref, email, address, city, zip, date, total, status,
+           shipping_offer_name, shipping_offer_price, shipping_company, shipping_cost, tracking_number
+    FROM "order" ORDER BY date DESC, id DESC
+`
 export const findOrderById = async (id) => {
     const [order] = await sql`SELECT * FROM "order" WHERE id = ${id}`
     return order
@@ -75,19 +78,26 @@ export const findOrderByIdForUpdate = async (db, id) => {
     return order
 }
 
-export const updateOrderById = async (db, id, { status, shippingCompany, trackingNumber }) => {
+export const updateOrderById = async (db, id, { status, shippingCompany, trackingNumber, shippingCost }) => {
     const [order] = await db`
         UPDATE "order" SET
             status = ${status},
             shipping_company = ${shippingCompany},
-            tracking_number = ${trackingNumber}
+            tracking_number = ${trackingNumber},
+            shipping_cost = ${shippingCost}
         WHERE id = ${id}
         RETURNING *
     `
     return order
 }
 
-export const carrierExistsByName = async (db, name) => {
-    const rows = await db`SELECT 1 FROM shipping_company_offer WHERE name = ${name}`
-    return rows.length > 0
+export const findCarrierCost = async (db, companyName, offerName) => {
+    const [row] = await db`
+        SELECT sco.cost
+        FROM shipping_company sc
+        JOIN shipping_company_offer sco ON sco.company_id = sc.id
+        JOIN shipping_offer so ON so.id = sco.offer_id
+        WHERE sc.name = ${companyName} AND so.name = ${offerName}
+    `
+    return row?.cost ?? null
 }
