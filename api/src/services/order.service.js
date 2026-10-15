@@ -13,7 +13,7 @@ import {
     findPaymentsByOrderId,
     findOrderByIdForUpdate,
     updateOrderById,
-    carrierExistsByName,
+    findCarrierCost,
 } from '../repositories/order.repository.js'
 
 const generateRef = () => Math.floor(100000 + Math.random() * 900000)
@@ -98,27 +98,24 @@ export const getOrderForAdmin = async (id) => {
     return { ...order, items, payments }
 }
 
-export const updateOrderAdmin = async (id, { status, shipping_company, tracking_number }) => {
+export const updateOrderAdmin = async (id, { status }) => {
     return runInTransaction(async (tx) => {
         const current = await findOrderByIdForUpdate(tx, id)
         if (!current) throw new AppError(404, 'NOT_FOUND', 'Commande introuvable')
 
-        const targetStatus = status ?? current.status
-        const targetCompany = shipping_company ?? current.shipping_company
-
-
-        if (!MANAGEABLE_STATUSES.includes(current.status) || !MANAGEABLE_STATUSES.includes(targetStatus)) {
-            throw new AppError(409, 'CONFLICT', `Impossible de passer de « ${current.status} » à « ${targetStatus} »`)
+        if (!MANAGEABLE_STATUSES.includes(current.status) || !MANAGEABLE_STATUSES.includes(status)) {
+            throw new AppError(409, 'CONFLICT', `Impossible de passer de « ${current.status} » à « ${status} »`)
         }
 
-        if (targetStatus === 'traitée' && !targetCompany) {
+        if (status === 'traitée' && !current.shipping_company) {
             throw new AppError(409, 'CONFLICT', 'Impossible de traiter une commande sans transporteur')
         }
 
         return updateOrderById(tx, id, {
-            status: targetStatus,
-            shippingCompany: targetCompany ?? null,
-            trackingNumber: tracking_number ?? current.tracking_number,
+            status,
+            shippingCompany: current.shipping_company,
+            trackingNumber: current.tracking_number,
+            shippingCost: current.shipping_cost,
         })
     })
 }
@@ -132,14 +129,19 @@ export const assignShipping = async (id, { shipping_company, tracking_number }) 
             throw new AppError(409, 'CONFLICT', "Un transporteur ne peut être affecté qu'à une commande payée")
         }
 
-        if (shipping_company !== undefined && !(await carrierExistsByName(tx, shipping_company))) {
-            throw new AppError(400, 'BAD_REQUEST', 'Transporteur inconnu')
+        let shippingCost = current.shipping_cost
+        if (shipping_company !== undefined) {
+            shippingCost = await findCarrierCost(tx, shipping_company, current.shipping_offer_name)
+            if (shippingCost === null) {
+                throw new AppError(400, 'BAD_REQUEST', 'Transporteur inconnu pour cette offre de livraison')
+            }
         }
 
         return updateOrderById(tx, id, {
             status: current.status,
             shippingCompany: shipping_company ?? current.shipping_company,
             trackingNumber: tracking_number ?? current.tracking_number,
+            shippingCost,
         })
     })
 }
