@@ -139,14 +139,25 @@ onMounted(load);
               <OrderStatusBadge :status="order.status" />
             </td>
             <td class="px-4 py-3">
-              <Button
-                size="sm"
-                :variant="order.status === 'payée' ? 'primary' : 'outline'"
-                :disabled="order.status === 'en attente' || busyId === order.id"
-                @click="openShipping(order)"
-              >
-                {{ order.status === "payée" ? "Traiter" : "Modifier" }}
-              </Button>
+              <div class="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  @click="navigateTo(`/orders/${order.id}`)"
+                >
+                  Voir
+                </Button>
+                <Button
+                  size="sm"
+                  :variant="order.status === 'payée' ? 'primary' : 'outline'"
+                  :disabled="
+                    order.status === 'en attente' || busyId === order.id
+                  "
+                  @click="openShipping(order)"
+                >
+                  {{ order.status === "payée" ? "Traiter" : "Modifier" }}
+                </Button>
+              </div>
             </td>
           </tr>
         </tbody>
