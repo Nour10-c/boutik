@@ -29,3 +29,15 @@ export const updateOrderSchema = z
         tracking_number: z.string().trim().min(1).max(255).optional(),
     })
     .refine((v) => Object.keys(v).length > 0, 'Aucune modification fournie')
+
+
+export const updateShippingSchema = z
+    .object({
+        shipping_company: z.string().trim().min(1).max(255).optional(),
+        tracking_number: z.string().trim().min(1).max(100).optional(),
+    })
+    .strict()
+    .refine(
+        (v) => v.shipping_company !== undefined || v.tracking_number !== undefined,
+        'Aucune modification fournie',
+    )

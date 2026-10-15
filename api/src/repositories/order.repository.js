@@ -86,3 +86,8 @@ export const updateOrderById = async (db, id, { status, shippingCompany, trackin
     `
     return order
 }
+
+export const carrierExistsByName = async (db, name) => {
+    const rows = await db`SELECT 1 FROM shipping_company_offer WHERE name = ${name}`
+    return rows.length > 0
+}
