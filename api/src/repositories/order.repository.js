@@ -43,7 +43,9 @@ export const insertOrderProduct = (db, orderId, line) => db`
 export const findOrderByIdAndKey = async (id, key) => {
     const [order] = await sql`
         SELECT id, ref, email, address, city, zip, date, total, status,
-               shipping_offer_name, shipping_offer_price, shipping_company, tracking_number
+               shipping_offer_name, shipping_offer_price, shipping_company, tracking_number,
+               (SELECT p.status FROM payment p WHERE p.order_id = "order".id
+                ORDER BY p.id DESC LIMIT 1) AS payment_status
         FROM "order" WHERE id = ${id} AND access_key = ${key}
     `
     return order
@@ -83,4 +85,9 @@ export const updateOrderById = async (db, id, { status, shippingCompany, trackin
         RETURNING *
     `
     return order
+}
+
+export const carrierExistsByName = async (db, name) => {
+    const rows = await db`SELECT 1 FROM shipping_company_offer WHERE name = ${name}`
+    return rows.length > 0
 }
