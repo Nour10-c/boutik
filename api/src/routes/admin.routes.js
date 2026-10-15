@@ -6,7 +6,7 @@ import {
     updateProductSchema,
     productIdParamSchema,
 } from '../schemas/product.schema.js'
-import { createProduct, updateProduct, deleteProduct } from '../services/product.service.js'
+import { listAdminProducts, createProduct, updateProduct, deleteProduct } from '../services/product.service.js'
 import { updateStockSchema } from '../schemas/stock.schema.js'
 import { updateStock } from '../services/stock.service.js'
 import { listShippingCarriers } from '../services/shipping.service.js'
@@ -16,6 +16,8 @@ export const adminRoutes = new Hono()
 adminRoutes.use('*', adminAuth)
 
 adminRoutes.get('/verify', (c) => c.json({ ok: true }))
+
+adminRoutes.get('/products', async (c) => c.json(await listAdminProducts()))
 
 adminRoutes.post('/products', validate('json', createProductSchema), async (c) => {
     const data = c.req.valid('json')

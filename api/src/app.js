@@ -13,7 +13,10 @@ import { adminOrdersRoutes } from './routes/admin.orders.routes.js'
 
 export const app = new Hono()
 
-app.use('*', cors({ origin: env.frontendUrl }))
+app.use('*', cors({
+    origin: [env.frontendUrl, env.adminUrl],
+    credentials: true
+  }))
 
 app.notFound((c) => {
     return c.json({ error: { code: 'NOT_FOUND', message: 'Route introuvable' } }, 404)
