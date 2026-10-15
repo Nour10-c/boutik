@@ -2,8 +2,17 @@
 useHead({ title: "Produits" });
 
 const {
-  filteredProducts, loading, errorMessage, search, filter, busyId, feedback,
-  load, changeStock, toggleActive, removeProduct,
+  filteredProducts,
+  loading,
+  errorMessage,
+  search,
+  filter,
+  busyId,
+  feedback,
+  load,
+  changeStock,
+  toggleActive,
+  removeProduct,
 } = useAdminProducts();
 
 const filters = [
@@ -13,6 +22,9 @@ const filters = [
   { value: "low", label: "Stock faible" },
   { value: "out", label: "Épuisés" },
 ];
+
+const createProduct = () => navigateTo("/products/new");
+const editProduct = (product) => navigateTo(`/products/${product.id}`);
 
 const productToDelete = ref(null);
 
@@ -26,7 +38,10 @@ onMounted(load);
 
 <template>
   <section class="space-y-6">
-    <h1 class="text-3xl font-bold">Produits</h1>
+    <div class="flex items-center justify-between">
+      <h1 class="text-3xl font-bold">Produits</h1>
+      <Button @click="createProduct">Nouveau produit</Button>
+    </div>
 
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
       <Input
@@ -48,7 +63,9 @@ onMounted(load);
       </div>
     </div>
 
-    <Notice v-if="feedback" :variant="feedback.variant">{{ feedback.message }}</Notice>
+    <Notice v-if="feedback" :variant="feedback.variant">{{
+      feedback.message
+    }}</Notice>
 
     <p v-if="loading" class="text-neutral-500">Chargement…</p>
 
@@ -68,7 +85,9 @@ onMounted(load);
 
     <Card v-else class="overflow-x-auto p-0">
       <table class="w-full text-left text-sm">
-        <thead class="border-b border-neutral-200 bg-neutral-50 text-neutral-700">
+        <thead
+          class="border-b border-neutral-200 bg-neutral-50 text-neutral-700"
+        >
           <tr>
             <th class="px-4 py-3 font-medium">Nom</th>
             <th class="px-4 py-3 font-medium">Prix</th>
@@ -108,6 +127,13 @@ onMounted(load);
                 <Button
                   size="sm"
                   variant="outline"
+                  @click="editProduct(product)"
+                >
+                  Modifier
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
                   :disabled="busyId === product.id"
                   @click="toggleActive(product)"
                 >
@@ -134,10 +160,13 @@ onMounted(load);
       @update:model-value="productToDelete = null"
     >
       <p class="text-base text-neutral-700">
-        « {{ productToDelete?.name }} » sera supprimé définitivement. Cette action est irréversible.
+        « {{ productToDelete?.name }} » sera supprimé définitivement. Cette
+        action est irréversible.
       </p>
       <template #actions>
-        <Button variant="outline" @click="productToDelete = null">Annuler</Button>
+        <Button variant="outline" @click="productToDelete = null"
+          >Annuler</Button
+        >
         <Button variant="danger" @click="confirmDelete">Supprimer</Button>
       </template>
     </Modal>
