@@ -22,6 +22,8 @@ Renseigner dans `.env` :
 pnpm dev
 ```
 
+`pnpm dev` utilise `src/local.index.js`, un serveur Node réservé au développement local. En production, seul le handler AWS Lambda est déployé.
+
 API sur http://localhost:3000
 
 Pour recevoir les événements Stripe en local :
