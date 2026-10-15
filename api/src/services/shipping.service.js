@@ -11,12 +11,12 @@ export const listShippingMethods = async () => {
 }
 
 export const listShippingCarriers = async () => {
-    const rows = await findShippingCarriers()
-    return rows.map((row) => ({
-        id: row.id,
-        name: row.name,
-        offerId: row.offer_id,
-    }))
+    const carriers = new Map()
+    for (const row of await findShippingCarriers()) {
+        if (!carriers.has(row.id)) carriers.set(row.id, { id: row.id, name: row.name, costs: [] })
+        carriers.get(row.id).costs.push({ offer: row.offer, cost: Number(row.cost) })
+    }
+    return [...carriers.values()]
 }
 
 export const createShippingMethods = async (data) => {
@@ -27,8 +27,8 @@ export const createShippingMethods = async (data) => {
         if (err.code === '23505') {
             throw new AppError(409, 'SHIPPING_METHODS_ALREADY_EXISTS', 'Ce type de livraison existe déjà')
         }
-            throw err
-    } 
+        throw err
+    }
 }
 
 export const getShippingById = async (id) => {
