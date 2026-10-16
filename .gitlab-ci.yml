@@ -7,11 +7,12 @@ deploy-boutique:
   variables:
     GIT_STRATEGY: fetch
   before_script:
-    - apt-get update && apt-get install -y curl unzip
+    - apt-get update -y && apt-get install -y curl unzip
     - curl -fsSL https://bun.sh/install | bash
     - export PATH="$HOME/.bun/bin:$PATH"
     - pip3 install boto3
-  script: python3 deploy.py
+  script: 
+    - python3 deploy.py
   only: 
     refs: 
       - main
