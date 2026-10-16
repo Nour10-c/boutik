@@ -70,8 +70,8 @@ def clear_distribution_cache(distribution_id):
 
 # Front
 for front in ['boutique', 'backoffice']:
-    execute(f'cd {front} && pnpm i')
-    execute(f'cd {front} && pnpm generate')
+    execute(f'cd {front} && bun i')
+    execute(f'cd {front} && bun generate')
 
     if front == 'boutique':
         clear_s3('iim-2026-boutik')
