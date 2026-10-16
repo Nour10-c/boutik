@@ -1,2 +1,3 @@
 local.index.ts
 .DS_Store
+.env

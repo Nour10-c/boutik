@@ -1,0 +1,14 @@
+stages: 
+  - deploy
+
+deploy-boutique: 
+  image: python:3.12-bookworm
+  stage: deploy
+  variables:
+    GIT_STRATEGY: fetch
+  before_script:
+    - pip3 install boto3 mimetypes
+  script: python3 deploy.py
+  only: 
+    refs: 
+      - main
